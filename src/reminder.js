@@ -3,25 +3,47 @@ import { useState } from 'react';
 export default function Reminder() {
   const [reminders, setReminders] = useState([]);
   const [inputList, setInputList] = useState('');
+  const [editId, setEditId] = useState(null);
+  const [optionDisplay, setOptionsDisplay] = useState({ id: null, display: null });
 
   const createReminderHtml = () => {
     return reminders.map((reminder) => {
-      return (
-        <li key={reminder.id}>
-          {reminder.title} {''}
+      const showOptions=
+        reminder.id === optionDisplay.id && optionDisplay.display === true ? (
+         <>           
           <button onClick={() => removeReminder(reminder.id)}>Remove</button>
+          <button onClick={() => editReminder(reminder.id)}>Edit</button>
+</>
+
+        ) : null;
+
+      return (
+        <li key={reminder.id} onClick={() => onClickReminder(reminder.id)}>
+          {reminder.title} {showOptions}
         </li>
       );
     });
   };
 
   const addReminder = () => {
-    const reminder = {
-      id: reminders.length + 1,
-      title: inputList
-    };
-    setReminders([...reminders, reminder]);
-    setInputList(''); 
+    if (editId) {
+      const updatedReminders = reminders.map((reminder) => {
+        if (reminder.id === editId) {
+          return { ...reminder, title: inputList };
+        }
+        return reminder;
+      });
+      setReminders(updatedReminders);
+      setInputList('');
+      setEditId(null);
+    } else {
+      const reminder = {
+        id: reminders.length + 1,
+        title: inputList
+      };
+      setReminders([...reminders, reminder]);
+      setInputList('');
+    }
   };
 
   const handleReminderInput = (event) => {
@@ -33,11 +55,23 @@ export default function Reminder() {
     setReminders(deleteReminders);
   };
 
+  const editReminder = (id) => {
+    const reminderToEdit = reminders.find((reminder) => reminder.id === id);
+    if (reminderToEdit) {
+      setInputList(reminderToEdit.title);
+      setEditId(reminderToEdit.id);
+    }
+  };
+
+  const onClickReminder = (id) => {
+    setOptionsDisplay({ id: id, display: optionDisplay.display !== true });
+  };
+
   return (
     <>
       <div>
         <ul>{createReminderHtml()}</ul>
-        <button onClick={addReminder}>Add</button>
+        <button onClick={addReminder}>{editId ? 'Update' : 'Add'}</button>
         <input value={inputList} onChange={handleReminderInput}></input>
       </div>
     </>
