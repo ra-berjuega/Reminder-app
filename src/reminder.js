@@ -4,13 +4,16 @@ export default function Reminder() {
   const [reminders, setReminders] = useState([]);
   const [inputList, setInputList] = useState('');
   const [editId, setEditId] = useState(null);
-  const [optionDisplay, setOptionsDisplay] = useState({ id: null, display: null });
+  const [optionDisplay, setOptionsDisplay] = useState({
+    id: null,
+    display: null,
+  });
 
   useState(() => {
     const storedReminders = localStorage.getItem('reminders');
     if (storedReminders) {
       setReminders(JSON.parse(storedReminders));
-      return storedReminders 
+      return storedReminders;
     }
   }, []);
 
@@ -20,13 +23,12 @@ export default function Reminder() {
 
   const createReminderHtml = () => {
     return reminders.map((reminder) => {
-      const showOptions=
+      const showOptions =
         reminder.id === optionDisplay.id && optionDisplay.display === true ? (
-         <>           
-          <button onClick={() => removeReminder(reminder.id)}>Remove</button>
-          <button onClick={() => editReminder(reminder.id)}>Edit</button>
-</>
-
+          <>
+            <button onClick={() => removeReminder(reminder.id)}>Remove</button>
+            <button onClick={() => editReminder(reminder.id)}>Edit</button>
+          </>
         ) : null;
 
       return (
@@ -51,7 +53,7 @@ export default function Reminder() {
     } else {
       const reminder = {
         id: reminders.length + 1,
-        title: inputList
+        title: inputList,
       };
       setReminders([...reminders, reminder]);
       setInputList('');
