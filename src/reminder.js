@@ -1,10 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Reminder() {
   const [reminders, setReminders] = useState([]);
   const [inputList, setInputList] = useState('');
   const [editId, setEditId] = useState(null);
   const [optionDisplay, setOptionsDisplay] = useState({ id: null, display: null });
+
+  useState(() => {
+    const storedReminders = localStorage.getItem('reminders');
+    if (storedReminders) {
+      setReminders(JSON.parse(storedReminders));
+      return storedReminders || "";
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('reminders', JSON.stringify(reminders));
+  }, [reminders]);
 
   const createReminderHtml = () => {
     return reminders.map((reminder) => {
