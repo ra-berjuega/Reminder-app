@@ -10,7 +10,7 @@ export default function Reminder() {
     const storedReminders = localStorage.getItem('reminders');
     if (storedReminders) {
       setReminders(JSON.parse(storedReminders));
-      return storedReminders || "";
+      return storedReminders 
     }
   }, []);
 
