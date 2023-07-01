@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
 
 export default function Reminder() {
-  const [reminders, setReminders] = useState([]);
+  const [reminders, setReminders] = useState(() => {
+    const storedReminders = localStorage.getItem('reminders');
+    if (storedReminders) {
+      return JSON.parse(storedReminders);
+    } else {
+      return [];
+    }
+  });
+
   const [inputList, setInputList] = useState('');
   const [editId, setEditId] = useState(null);
   const [optionDisplay, setOptionsDisplay] = useState({
     id: null,
     display: null,
   });
-
-  useState(() => {
-    const storedReminders = localStorage.getItem('reminders');
-    if (storedReminders) {
-      setReminders(JSON.parse(storedReminders));
-      return storedReminders;
-    }
-  }, []);
 
   useEffect(() => {
     localStorage.setItem('reminders', JSON.stringify(reminders));
@@ -33,7 +33,7 @@ export default function Reminder() {
 
       return (
         <li key={reminder.id} onClick={() => onClickReminder(reminder.id)}>
-          {reminder.title} {showOptions}
+          {reminder.title} {showOptions} <input type="datetime-local" />
         </li>
       );
     });
