@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function Reminder() {
   const [reminders, setReminders] = useState(() => {
@@ -23,6 +23,32 @@ export default function Reminder() {
     localStorage.setItem('reminders', JSON.stringify(reminders));
   }, [reminders]);
 
+  useEffect(() => {
+    checkReminderNotifications();
+  }, [reminders]);
+
+  const checkReminderNotifications = () => {
+    reminders.forEach((reminder) => {
+      const reminderDateTime = new Date(reminder.dateTime);
+      const currentTime = new Date();
+      if (reminderDateTime <= currentTime) {
+        showNotification(reminder.title);
+      }
+    });
+  };
+
+  const showNotification = (title) => {
+if (Notification.permission === 'granted') {
+      new Notification(title);
+    } else if (Notification.permission !== 'denied') {
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          new Notification(title);
+        }
+      });
+    }
+  };
+
   const createReminderHtml = () => {
     return reminders.map((reminder) => {
       const showOptions =
@@ -36,7 +62,7 @@ export default function Reminder() {
       return (
         <li key={reminder.id} onClick={() => onClickReminder(reminder.id)}>
           {reminder.title} {showOptions}
-          <input type="datetime-local" value={reminder.dateTime} /> 
+          <input type="datetime-local" value={reminder.dateTime} />
         </li>
       );
     });
