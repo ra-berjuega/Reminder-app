@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 export default function Reminder() {
   const [reminders, setReminders] = useState(() => {
     const storedReminders = localStorage.getItem('reminders');
@@ -29,16 +28,23 @@ export default function Reminder() {
 
   const checkReminderNotifications = () => {
     reminders.forEach((reminder) => {
-      const reminderDateTime = new Date(reminder.dateTime);
-      const currentTime = new Date();
-      if (reminderDateTime <= currentTime) {
-        showNotification(reminder.title);
+      if (!reminder.reminderSetOff) {
+        const reminderDateTime = new Date(reminder.dateTime);
+        const currentTime = new Date();
+        if (reminderDateTime <= currentTime) {
+          if (document.visibilityState === 'visible') {
+            showNotification(reminder.title);
+          }
+          reminder.reminderSetOff = true;
+        }
       }
     });
+    setReminders([...reminders]);
   };
 
+
   const showNotification = (title) => {
-if (Notification.permission === 'granted') {
+    if (Notification.permission === 'granted') {
       new Notification(title);
     } else if (Notification.permission !== 'denied') {
       Notification.requestPermission().then((permission) => {
@@ -90,6 +96,7 @@ if (Notification.permission === 'granted') {
         id: reminders.length + 1,
         title: inputList,
         dateTime: `${date}T${time}`,
+        reminderSetOff: false,
       };
       setReminders([...reminders, reminder]);
       setInputList('');
