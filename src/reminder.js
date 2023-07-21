@@ -10,6 +10,7 @@ export default function Reminder() {
   });
 
   const [inputList, setInputList] = useState('');
+  const [searchFilter, setSearchFilter] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [editId, setEditId] = useState(null);
@@ -56,7 +57,11 @@ export default function Reminder() {
   };
 
   const createReminderHtml = () => {
-    return reminders.map((reminder) => {
+    const filteredReminders = reminders.filter((reminder) =>
+      reminder.title.toLowerCase().includes(searchFilter.toLowerCase())
+    );
+
+    return filteredReminders.map((reminder) => {
       const showOptions =
         reminder.id === optionDisplay.id && optionDisplay.display === true ? (
           <>
@@ -133,10 +138,17 @@ export default function Reminder() {
   const onClickReminder = (id) => {
     setOptionsDisplay({ id: id, display: optionDisplay.display !== true });
   };
+  
 
   return (
     <>
       <div>
+        <input
+          type="text"
+          value={searchFilter}
+          placeholder="Search Reminders"
+          onChange={(event) => setSearchFilter(event.target.value)}
+        />
         <ul>{createReminderHtml()}</ul>
         <button onClick={addReminder}>{editId ? 'Update' : 'Add'}</button>
         <input value={inputList} onChange={handleReminderInput} />
